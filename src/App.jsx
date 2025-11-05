@@ -51,17 +51,21 @@ export default function App() {
     // ask for camera permission and start
     try {
       const devices = await Html5Qrcode.getCameras();
-      const cameraId = devices && devices.length ? devices[0].id : null;
+      if (!devices || devices.length === 0) throw new Error("No cameras found");
+
+      // Try to find the back camera
+      const backCamera = devices.find(d =>
+        d.label.toLowerCase().includes("back") || d.label.toLowerCase().includes("rear")
+      );
+
+      // Prefer back camera if found, else fallback to first one
+      const cameraId = backCamera ? backCamera.id : devices[0].id;
+
       await html5Qrcode.start(
         cameraId,
         { fps: 8, qrbox: { width: 250, height: 250 } },
-        (decodedText, decodedResult) => {
-          // on success
-          handleScan(decodedText);
-        },
-        (errorMessage) => {
-          // parse errors if needed
-        }
+        (decodedText) => handleScan(decodedText),
+        () => { }
       );
     } catch (err) {
       setScanning(false);
