@@ -110,25 +110,32 @@ export default function App() {
   };
 
   const isDuplicate = (d) => {
-    return entries.some(
-      (e) => (d.email && e.email === d.email) || (d.phone && e.phone === d.phone) || (d.id && e.id === d.id)
+    return entries.some((e) =>
+      e.id === d.id &&
+      e.name === d.name &&
+      e.college === d.college &&
+      e.email === d.email &&
+      e.phone === d.phone
     );
   };
 
   const handleScan = (decodedText) => {
     const data = parseScanned(decodedText);
     if (!data) {
-      toast("Invalid QR format");
+      toast("⚠️ Invalid QR format");
       return;
     }
+
     if (isDuplicate(data)) {
-      toast("Already scanned / registered");
+      toast("⚠️ Duplicate QR detected — already registered!");
       return;
     }
+
+    // Add to entries
     setEntries((p) => [...p, data]);
-    toast("Scanned: " + (data.name || data.email || data.id));
-    // optionally auto-stop after one scan:
-    // stopScanner();
+
+    // Show success toast
+    toast(`✅ Scan successful: ${data.name || data.email || data.id}`);
   };
 
   const handleManualAdd = (e) => {
