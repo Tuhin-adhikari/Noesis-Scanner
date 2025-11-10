@@ -111,11 +111,9 @@ export default function App() {
 
   const isDuplicate = (d) => {
     return entries.some((e) =>
-      e.id === d.id &&
-      e.name === d.name &&
-      e.college === d.college &&
-      e.email === d.email &&
-      e.phone === d.phone
+      (d.id && e.id === d.id) ||
+      (d.email && e.email === d.email) ||
+      (d.phone && e.phone === d.phone)
     );
   };
 
@@ -131,11 +129,17 @@ export default function App() {
       return;
     }
 
-    // Add to entries
+    // Add new valid entry
     setEntries((p) => [...p, data]);
 
-    // Show success toast
-    toast(`✅ Scan successful: ${data.name || data.email || data.id}`);
+    // Stop scanner for a second to avoid double scans
+    if (scannerRef.current) {
+      scannerRef.current.pause(true);
+      setTimeout(() => scannerRef.current.resume(), 1500);
+    }
+
+    // Show confirmation popup
+    alert(`✅ Scan successful!\n\nName: ${data.name}\nCollege: ${data.college}\nEmail: ${data.email}\nPhone: ${data.phone}`);
   };
 
   const handleManualAdd = (e) => {
