@@ -200,6 +200,29 @@ export default function App() {
     );
   });
 
+  const removeDuplicates = () => {
+    const map = new Map();
+    const unique = [];
+
+    for (const entry of entries) {
+      const key = [
+        entry.name?.trim().toLowerCase(),
+        entry.college?.trim().toLowerCase(),
+        entry.email?.trim().toLowerCase(),
+        entry.phone?.trim().toLowerCase()
+      ].join("|");
+
+      if (!map.has(key)) {
+        map.set(key, true);
+        unique.push(entry);
+      }
+    }
+
+    const removed = entries.length - unique.length;
+    setEntries(unique);
+    toast(`Removed ${removed} duplicate entries`);
+  };
+
   return (
     <div className="min-h-screen p-6 text-white">
       <div className="max-w-6xl mx-auto">
@@ -218,6 +241,12 @@ export default function App() {
               {scanning ? "Stop Scanning" : "Start Scanning"}
             </button>
             <button onClick={sortByCollege} className="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-500 font-semibold">Sort by College</button>
+            <button
+              onClick={removeDuplicates}
+              className="px-4 py-2 rounded-md bg-yellow-600 hover:bg-yellow-500 font-semibold"
+            >
+              Remove Duplicates
+            </button>
             <button onClick={exportExcel} className="px-4 py-2 rounded-md bg-green-600 hover:bg-green-500 font-semibold">Export Excel</button>
             <button onClick={clearAll} className="px-4 py-2 rounded-md bg-red-700 hover:bg-red-600 font-semibold">Clear All</button>
           </div>
